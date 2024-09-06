@@ -52,6 +52,8 @@ class Recinto {
             return false;
         } else if(animal.especie === 'hipopótamo' && this.animaisExistentes.length && this.animaisExistentes[0].especie !== 'hipopótamo' && this.numero !== 3) {
             return false;
+        } else if(this.animaisExistentes[0]?.especie === 'hipopótamo' && animal.especie !== 'hipopótamo' && this.numero !== 3) {
+            return false;
         } else {
             this.animaisExistentes[0] && animal.especie !== this.animaisExistentes[0].especie ? this.addTamanhoOcupado(espaco + 1) : this.addTamanhoOcupado(espaco);
             return true;
