@@ -33,7 +33,7 @@ class RecintosZoo {
             return { erro: "Não há recinto viável", recintosViaveis: false };
         } else {
             let recintosViaveis = tempRecintosViaveis.map(recinto => 
-                `Recinto ${recinto.num} (espaço livre: ${recinto.tamanhoTotal - recinto.tamanhoOcupado} total: ${recinto.tamanhoTotal})`
+                `Recinto ${recinto.numero} (espaço livre: ${recinto.tamanhoTotal - recinto.tamanhoOcupado} total: ${recinto.tamanhoTotal})`
             );
             return { erro: false, recintosViaveis: recintosViaveis };
         }
