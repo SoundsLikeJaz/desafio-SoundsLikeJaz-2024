@@ -13,51 +13,49 @@ class Recinto {
         this.bioma = bioma;
         this.tamanhoTotal = total;
         this.setAnimais(animais);
-        this.classeHabitantes = this.animaisExistentes.length ? this.animaisExistentes[0].classe : '';
-        this.tamanhoOcupado = this.animaisExistentes.length ? this.animaisExistentes[0].tamanho * this.animaisExistentes.length : 0;
     }
 
     setAnimais(animais) {
-        if(animais.length) {
-
-            animais.forEach(animal => {
-                if(animal instanceof Animal) {
-                    this.animaisExistentes.push(animal);
-                } else {
-                    throw new Error('Objeto não é uma instância de Animal');
-                }
-            });
-
-        }
+        this.animaisExistentes = animais.filter(animal => animal instanceof Animal);
+        this.tamanhoOcupado = this.animaisExistentes.length ? this.animaisExistentes[0].tamanho * this.animaisExistentes.length : 0;
+        this.classeHabitantes = this.animaisExistentes.length ? this.animaisExistentes[0].classe : '';
     }
 
-    addTamanhoOcupado(tamanho) {
-        if(tamanho + this.tamanhoOcupado > this.tamanhoTotal) {
-            throw new Error('Tamanho excede o total');
-        } else {
-            this.tamanhoOcupado += tamanho;
-        }
+    temOutrasEspecies(animal) {
+        return this.animaisExistentes.length && animal.especie !== this.animaisExistentes[0].especie;
+    }
+
+    temConflitosEspeciais(animal, espaco) {
+        if (animal.especie === 'macaco' && espaco <= 1 && !this.animaisExistentes.length) return true;
+        
+        if ((animal.especie === 'hipopótamo' || this.animaisExistentes[0]?.especie === 'hipopótamo') && this.temOutrasEspecies(animal) && this.numero !== 3) return true;
+
+        return false;
+    }
+
+    podeAcomodar(animal, espaco) {
+        const num = this.temOutrasEspecies(animal) ? espaco + 1 : espaco;
+
+        return num + this.tamanhoOcupado <= this.tamanhoTotal;
+    }
+
+    addTamanhoOcupado(animal, espaco) {
+        this.temOutrasEspecies(animal) ? this.tamanhoOcupado += espaco + 1 : this.tamanhoOcupado += espaco;
     }
 
     podeEntrar(animal, espaco) {
-        if(animal.recintosPossiveis.indexOf(this.numero) === -1) {
-            return false;
-        } else if(this.classeHabitantes && animal.classe !== this.classeHabitantes) {
-            return false;
-        } else if(this.tamanhoOcupado + espaco > this.tamanhoTotal) {
-            return false;
-        } else if(animal.classe === 'carnivoro' && this.animaisExistentes.length && this.animaisExistentes[0].especie !== animal.especie) {
-            return false;
-        } else if(animal.especie === 'macaco' && espaco <= 1 && !this.animaisExistentes.length) {
-            return false;
-        } else if(animal.especie === 'hipopótamo' && this.animaisExistentes.length && this.animaisExistentes[0].especie !== 'hipopótamo' && this.numero !== 3) {
-            return false;
-        } else if(this.animaisExistentes[0]?.especie === 'hipopótamo' && animal.especie !== 'hipopótamo' && this.numero !== 3) {
-            return false;
-        } else {
-            this.animaisExistentes[0] && animal.especie !== this.animaisExistentes[0].especie ? this.addTamanhoOcupado(espaco + 1) : this.addTamanhoOcupado(espaco);
-            return true;
-        }
+        if (animal.recintosPossiveis.indexOf(this.numero) === -1) return false;
+
+        if (this.classeHabitantes && animal.classe !== this.classeHabitantes) return false;
+
+        if (!this.podeAcomodar(animal, espaco)) return false;
+
+        if (animal.classe === 'carnivoro' && this.temOutrasEspecies(animal)) return false;
+
+        if (this.temConflitosEspeciais(animal, espaco)) return false;
+
+        this.addTamanhoOcupado(animal, espaco);
+        return true;
     }
 }
 
