@@ -27,7 +27,6 @@ class Recinto {
 
     temConflitosEspeciais(animal, espaco) {
         if (animal.especie === 'macaco' && espaco <= 1 && !this.animaisExistentes.length) return true;
-        
         if ((animal.especie === 'hipopótamo' || this.animaisExistentes[0]?.especie === 'hipopótamo') && this.temOutrasEspecies(animal) && this.numero !== 3) return true;
 
         return false;
@@ -45,13 +44,9 @@ class Recinto {
 
     podeEntrar(animal, espaco) {
         if (animal.recintosPossiveis.indexOf(this.numero) === -1) return false;
-
         if (this.classeHabitantes && animal.classe !== this.classeHabitantes) return false;
-
         if (!this.podeAcomodar(animal, espaco)) return false;
-
         if (animal.classe === 'carnivoro' && this.temOutrasEspecies(animal)) return false;
-
         if (this.temConflitosEspeciais(animal, espaco)) return false;
 
         this.addTamanhoOcupado(animal, espaco);
